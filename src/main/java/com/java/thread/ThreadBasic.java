@@ -58,7 +58,7 @@ class RunThreadRunnable implements Runnable{
 }
 
 
-// public void Thread.interrupt()              中断线程
+// public void Thread.interrupt()              中断线程 也就是设置中断标志位. 中断标志位表示当前线程已经被中断了.
 // public boolean Thread.isInterrupted()       判断是否被中断
 // public static boolean Thread.interrupted()  判断是否被中断, 并清除当前中断状态
 class SleepInterruptThread implements Runnable{
