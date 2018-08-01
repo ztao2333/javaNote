@@ -1,21 +1,21 @@
 package com.java.thread;
 
-import java.time.Instant;
-import java.util.Date;
 
 public class ThreadBasic {
 
     public static void main (String[] args) {
-        // 匿名内部类(java8 Lambda表达式)   重载run()
-        Thread t1 = new Thread() {
-            @Override
-            public void run() {
-                System.out.println("Hello I am 匿名内部类");
-            }
+        // 匿名内部类  重载run()
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                System.out.println("Hello I am 匿名内部类");
+//            }
+//
+//        }.start();// start()开启此线程
 
-        };
-        // start()开启此线程
-        t1.start();
+
+        // Lambda表达式 代替 匿名内部类
+        new Thread(() -> System.out.println("Hello I am Lambda表达式")).start();
 
 
         RunThread runThread = new RunThread();
@@ -25,7 +25,10 @@ public class ThreadBasic {
         // sleep interrupt
         Thread sleepInterruptThread = new Thread(new SleepInterruptThread());
         sleepInterruptThread.start();
-        // 这个sleep是为了让此线程等一会执行sleepInterruptThread.interrupt()  先执行;
+        /*
+        一个线程在运行状态中，其中断标志被设置为true,则此后，一旦线程调用了wait、join、sleep方法中的一种，
+        立马抛出一个InterruptedException，且中断标志被清除，重新设置为false。
+         */
         try {
             System.out.println("in main before sleep: " + System.currentTimeMillis());
             Thread.sleep(2000);
@@ -33,7 +36,7 @@ public class ThreadBasic {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // 中断线程
+        // 中断线程 设置中断标志为true
         sleepInterruptThread.interrupt();
     }
 
@@ -58,9 +61,15 @@ class RunThreadRunnable implements Runnable{
 }
 
 
-// public void Thread.interrupt()              中断线程 也就是设置中断标志位. 中断标志位表示当前线程已经被中断了.
+// public void Thread.interrupt()
+// 中断线程 也就是设置中断标志位. 中断标志位表示当前线程已经被中断了. 方法只是改变中断状态而已，它不会中断一个正在运行的线程
 // public boolean Thread.isInterrupted()       判断是否被中断
 // public static boolean Thread.interrupted()  判断是否被中断, 并清除当前中断状态
+
+/*
+调用线程类的interrupt()，其本质只是设置该线程的中断标志，将中断标志设置为true，并根据线程状态决定是否抛出异常。
+因此，通过interrupt()真正实现线程的中断原理是：开发人员根据中断标志的具体值，来决定如何退出线程。
+ */
 class SleepInterruptThread implements Runnable{
     @Override
     public void run() {
