@@ -1,6 +1,9 @@
 package com.java.thread;
 
 
+/*
+ 多线程start, run, sleep, interrupt, 匿名内部类
+  */
 public class ThreadBasic {
 
     public static void main (String[] args) {
@@ -80,7 +83,7 @@ class SleepInterruptThread implements Runnable{
                 break;
             }
             try {
-                //sleep()方法导致了程序暂停执行指定的时间，让出cpu该其他线程，
+                //sleep()方法导致了程序暂停执行指定的时间，让出cpu给其他线程，
                 //但是他的监控状态依然保持者，当指定的时间到了又会自动恢复运行状态。
                 //在调用sleep()方法的过程中，线程不会释放对象锁。
                 System.out.println("in SleepInterruptThread before sleep: " + System.currentTimeMillis());
