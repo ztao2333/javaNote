@@ -10,6 +10,12 @@ public class ThreadJoinYield {
     当前线程在让出CPU后, 还会进行CPU资源的争夺, 但是是否能够再次被分配到, 就不一定了.
     如果你觉得一个线程不那么重要, 或者优先级非常低, 而且又害怕它会占用太多的CPU资源,
     那么可以适当的时候调用Thread.yield(), 给予其他重要线程更多的工作机会.
+
+    线程池没有join， 使用CountDownLatch或者CyclicBarrier
+
+    CountDownLatch latch = new CountDownLatch(2);//初始化为需要等待2个线程完成
+    latch.countDown();//当前线程运行结束，调用countDown将latch减1
+    latch.await();//阻塞，一直到CountDownLatch减为0为止
      */
     private volatile static int i = 0;
 
