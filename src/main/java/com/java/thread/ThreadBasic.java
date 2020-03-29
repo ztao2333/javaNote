@@ -8,23 +8,23 @@ public class ThreadBasic {
 
     public static void main (String[] args) {
         // 匿名内部类  重载run()
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                System.out.println("Hello I am 匿名内部类");
-//            }
-//
-//        }.start();// start()开启此线程
+        new Thread() {
+            @Override
+            public void run() {
+                System.out.println("Hello I am 匿名内部类");
+            }
+
+        }.start();// start()开启此线程
 
 
-        // Lambda表达式 代替 匿名内部类
+//         Lambda表达式 代替 匿名内部类
         new Thread(() -> System.out.println("Hello I am Lambda表达式")).start();
 
 
-        RunThread runThread = new RunThread();
-        runThread.start();
-        // 实现Runnable接口
+
+//         实现Runnable接口
         new Thread(new RunThreadRunnable()).start();
+
         // sleep interrupt
         Thread sleepInterruptThread = new Thread(new SleepInterruptThread());
         sleepInterruptThread.start();
@@ -34,13 +34,25 @@ public class ThreadBasic {
          */
         try {
             System.out.println("in main before sleep: " + System.currentTimeMillis());
-            Thread.sleep(2000);
+            Thread.sleep(6000);
             System.out.println("in main after sleep: " + System.currentTimeMillis());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         // 中断线程 设置中断标志为true
         sleepInterruptThread.interrupt();
+
+        RunThread runThread = new RunThread();
+        runThread.start();
+        // interrupt， interrupted
+        RunThread runThread1 = new RunThread();
+        runThread1.start();
+        runThread1.interrupt();
+        System.out.println("第一次 调用返回值isInterrupted： "+ runThread1.isInterrupted());
+        System.out.println("第二次 调用返回值isInterrupted： "+ runThread1.isInterrupted());
+        // 如果使用runThread1.interrupted(), 返回的也是main线程的。
+        System.out.println("第一次调用返回值interrupted： "+ Thread.interrupted());
+        System.out.println("第二次调用返回值interrupted： "+ Thread.interrupted());
     }
 
 
@@ -50,6 +62,11 @@ public class ThreadBasic {
 class RunThread extends Thread{
     @Override
     public void run() {
+//        interrupted() 返回当前线程的 （此时是main线程）, 规范来说， 只能使用this/Thread来调用。 this更能说明当前， 推荐
+        System.out.println("runThread内部第一次调用返回值interrupted： "+ this.interrupted());
+        System.out.println("runThread内部第二次调用返回值interrupted： "+ this.interrupted());
+//        System.out.println("runThread内部第一次调用返回值interrupted： "+ Thread.interrupted());
+//        System.out.println("runThread内部第二次调用返回值interrupted： "+ Thread.interrupted());
         System.out.println("Hello I am 内部类 extends Thread");
     }
 }
@@ -66,13 +83,22 @@ class RunThreadRunnable implements Runnable{
 
 // public void Thread.interrupt()
 // 中断线程 也就是设置中断标志位. 中断标志位表示当前线程已经被中断了. 方法只是改变中断状态而已，它不会中断一个正在运行的线程
-// public boolean Thread.isInterrupted()       判断是否被中断
-// public static boolean Thread.interrupted()  判断是否被中断, 并清除当前中断状态
-
+// public boolean Thread.isInterrupted()       判断是否被中断 前提当thread was alive 返回true。 可以看源码注释
+/* public static boolean Thread.interrupted()  判断是否被中断, 并清除当前中断状态（中断标记为false）
+Thread.interrupted()清除标志位是为了下次继续检测标志位。
+        如果一个线程被设置中断标志后，选择结束线程那么自然不存在下次的问题，
+        而如果一个线程被设置中断标识后，进行了一些处理后选择继续进行任务，
+        而且这个任务也是需要被中断的，那么当然需要清除标志位了。
+*/
 /*
 调用线程类的interrupt()，其本质只是设置该线程的中断标志，将中断标志设置为true，并根据线程状态决定是否抛出异常。
 因此，通过interrupt()真正实现线程的中断原理是：开发人员根据中断标志的具体值，来决定如何退出线程。
  */
+
+/*
+        一个线程在运行状态中，其中断标志被设置为true,则此后，一旦线程调用了wait、join、sleep方法中的一种，
+        立马抛出一个InterruptedException，且中断标志被清除，重新设置为false。
+*/
 class SleepInterruptThread implements Runnable{
     @Override
     public void run() {
@@ -80,6 +106,7 @@ class SleepInterruptThread implements Runnable{
             // 判断是否被中断, 并清除当前中断状态
             if (Thread.currentThread().isInterrupted()) {
                 System.out.println("interrupted 已被中断");
+                // 处理中断逻辑， 这里的break就中断了这个线程 （while死循环被中断）
                 break;
             }
             try {
@@ -89,7 +116,7 @@ class SleepInterruptThread implements Runnable{
                 System.out.println("in SleepInterruptThread before sleep: " + System.currentTimeMillis());
                 // false
                 System.out.println("1:" + Thread.currentThread().isInterrupted());
-                Thread.sleep(5000);
+                Thread.sleep(5000);// throw exception when run sleepInterruptThread.interrupt();
                 System.out.println("in SleepInterruptThread after sleep: " + System.currentTimeMillis());
 
                 // 抛出InterruptedException，同时会清除线程的中断状态 (isInterrupted: false)
@@ -109,5 +136,4 @@ class SleepInterruptThread implements Runnable{
     }
 
 }
-
-
+// https://blog.csdn.net/zhuyong7/article/details/80852884
