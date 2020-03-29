@@ -9,8 +9,8 @@
         <module name="javaNote" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="javaNote" target="1.8" />
+    <bytecodeTargetLevel target="8">
+      <module name="javaNote" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
