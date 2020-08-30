@@ -47,7 +47,7 @@ Has Claim API to check if the policy has claim.
 ## Response Specification
 ## HasClaimResponseDTO
 |Field Name|Field Type|Description|Remark|Example|
-|--|--|--|--|--|
+|---|---|---|---|---|
 |hasClaim|String|check result|YES,NO|YES|
 
 ## Response Sample
